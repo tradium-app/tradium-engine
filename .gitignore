@@ -7,6 +7,7 @@ config.ini
 data/*
 !.keep
 !data/dummy_output_1_only.csv
+!data/dummy-data.csv
 
 # compiled files
 *.pyc
