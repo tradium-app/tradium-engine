@@ -52,7 +52,11 @@ regressor.compile(
 
 # %% Train the model
 
-regressor.fit(x_train, y_train, epochs=20, batch_size=BATCH_SIZE)
+stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=2)
+
+regressor.fit(
+    x_train, y_train, epochs=40, batch_size=BATCH_SIZE, callbacks=[stoppingCallback]
+)
 
 # %% Prepare Test Data & Run Prediction
 test_data = stock_history.iloc[TRAINING_LENGTH:, 0:1]

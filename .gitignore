@@ -1,3 +1,6 @@
+# ide files
+.idea/*
+
 # temp files
 __pycache__/
 config.ini
