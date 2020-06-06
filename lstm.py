@@ -21,7 +21,7 @@ TRAINING_LENGTH = math.ceil(0.7 * len(stock_history))
 training_data = stock_history.iloc[:TRAINING_LENGTH, :]
 
 x_train, y_train = [], []
-BATCH_SIZE = 3
+BATCH_SIZE = 30
 
 for i in range(BATCH_SIZE, len(training_data) - 2):
     x_train.append(training_data.iloc[i - BATCH_SIZE : i, 0:1].to_numpy().tolist())
@@ -70,8 +70,8 @@ x_test = np.array(x_test)
 y_test = np.array(y_test)
 
 #  %% Evaluate & Run Prediction
-results = regressor.evaluate(x_test, y_test, batch_size=10)
-print(results)
+test_score, test_acc = regressor.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
+print(test_score, test_acc)
 
 y_predict = regressor.predict(x_test)
 
