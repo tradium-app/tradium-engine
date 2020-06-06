@@ -11,6 +11,8 @@ data/*
 !.keep
 !data/dummy_output_1_only.csv
 !data/dummy-data.csv
+!data/trainset.csv
+!data/testset.csv
 
 # compiled files
 *.pyc
