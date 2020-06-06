@@ -51,7 +51,6 @@ regressor.compile(
 )
 
 # %% Train the model
-
 stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=2)
 
 regressor.fit(
@@ -59,16 +58,20 @@ regressor.fit(
 )
 
 # %% Prepare Test Data & Run Prediction
-test_data = stock_history.iloc[TRAINING_LENGTH:, 0:1]
-test_data.iloc[:10, 0:1]
+test_data = stock_history.iloc[TRAINING_LENGTH:, :]
 
-x_test = []
+x_test, y_test = [], []
 
 for i in range(BATCH_SIZE, len(test_data)):
     x_test.append(test_data.iloc[i - BATCH_SIZE : i, 0:1].to_numpy().tolist())
+    y_test.append(test_data.iloc[i : i + 1, 1:2].iloc[0, :].to_numpy().tolist())
 
 x_test = np.array(x_test)
-y_predict = regressor.predict(x_test)
+y_test = np.array(y_test)
+
+#  %% Evaluate & Run Prediction
+results = regressor.evaluate(x_test, y_test, batch_size=10)
+print(results)
 
 y_predict = regressor.predict(x_test)
 
@@ -77,6 +80,5 @@ y_predict = y_predict / scaler.scale_[1] + scaler.data_min_[1]
 
 pd.DataFrame(y_predict).plot()
 
-# print(y_predict)
 
 # %%
