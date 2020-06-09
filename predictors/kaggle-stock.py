@@ -53,7 +53,7 @@ regressor.compile(optimizer="adam", loss="mean_squared_error")
 
 # %% Train the Model
 TRAIN_BATCH_SIZE = 32
-regressor.fit(x_train, y_train, epochs=10, batch_size=TRAIN_BATCH_SIZE)
+regressor.fit(x_train, y_train, epochs=100, batch_size=TRAIN_BATCH_SIZE)
 
 # %%
 dataset_test = pd.read_csv("./data/testset.csv")
