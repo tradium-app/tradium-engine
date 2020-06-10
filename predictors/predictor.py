@@ -8,11 +8,7 @@ from utilities.mongo_connection import get_db_connection
 
 # from predictors.lstm import lstm_predict
 
-import os
-
 env = Env()
-env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
-env.read_env(path=env_path)
 api_key = env("alphavantage_api_key")
 
 
