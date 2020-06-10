@@ -1,4 +1,4 @@
-FROM python
+FROM tensorflow/tensorflow
 
 COPY . /app
 
