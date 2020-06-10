@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, "../")
 import gc
 import time
+from environs import Env
 from utilities.mongo_connection import get_db_connection
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -10,9 +11,11 @@ from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from predictors.predictor import Predictor
 
+env = Env()
+env.read_env()
 
 jobstores = {
-    "default": MongoDBJobStore(database="stocksdb", client=get_db_connection()),
+    "default": MongoDBJobStore(database=env("MONGO_DB"), client=get_db_connection()),
 }
 
 executors = {"default": ThreadPoolExecutor(20), "processpool": ProcessPoolExecutor(5)}
