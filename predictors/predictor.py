@@ -41,7 +41,8 @@ class Predictor:
         self, symbol, title, model_accuracy, model_prediction,
     ):
         conn = get_db_connection()
-        stocksdb = conn["stocksdb"]
+        db = Env()("MONGO_DB")
+        stocksdb = conn[db]
         modelCollection = stocksdb["models"]
 
         dbModel = {
