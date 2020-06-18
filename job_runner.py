@@ -10,6 +10,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from predictors.predictor import Predictor
+from news_collector.newsapi_collector import NewsCollector
 
 env = Env()
 env.read_env()
@@ -25,12 +26,19 @@ scheduler = BackgroundScheduler(
     jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc
 )
 
-
 job = scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
     minutes=10,
-    id="35fd79fa7ee7484696176b919ef6b431",
+    id="prediction_job",
+    replace_existing=True,
+)
+
+job = scheduler.add_job(
+    NewsCollector().collect_n_save_news,
+    "interval",
+    minutes=30,
+    id="news_job",
     replace_existing=True,
 )
 

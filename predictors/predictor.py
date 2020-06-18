@@ -9,7 +9,7 @@ from utilities.mongo_connection import get_db_connection
 # from predictors.lstm import lstm_predict
 
 env = Env()
-api_key = env("alphavantage_api_key")
+# api_key = env("alphavantage_api_key")
 
 
 class Predictor:
