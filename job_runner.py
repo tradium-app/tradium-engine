@@ -11,7 +11,7 @@ from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from predictors.predictor import Predictor
 from news_collector.newsapi_collector import NewsCollector
-from tweets_collector.TweetsCollector import TweetsCollector
+from tweets_collector.tweets_collector import TweetsCollector
 
 env = Env()
 env.read_env()
