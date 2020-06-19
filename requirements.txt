@@ -2,7 +2,7 @@ APScheduler==3.6.3
 alpha_vantage==2.1.2
 dnspython==1.16.0
 environs==7.1.0
-keras==2.4.0
+keras==2.4.2
 matplotlib==3.1.1
 newsapi-python==0.2.6
 numpy==1.17.3
@@ -14,4 +14,6 @@ pytz==2019.3
 requests==2.22.0
 scikit_learn==0.23.1
 tensorflow
+textblob==0.15.3
+tweepy==3.8.0
 yfinance==0.1.54
