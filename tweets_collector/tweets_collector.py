@@ -1,12 +1,13 @@
 # %%
+import os
 import sys
 
 sys.path.insert(0, "../")
 from environs import Env
 from datetime import datetime, timedelta
 from utilities.mongo_connection import get_db_connection
-from TwitterClient import TwitterClient
-import os
+from tweets_collector.TwitterClient import TwitterClient
+
 
 env = Env()
 env.read_env()
