@@ -11,6 +11,7 @@ from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from predictors.predictor import Predictor
 from news_collector.newsapi_collector import NewsCollector
+from tweets_collector.TwitterClient import TwitterClient
 
 env = Env()
 env.read_env()
@@ -39,6 +40,14 @@ job = scheduler.add_job(
     "interval",
     minutes=30,
     id="news_job",
+    replace_existing=True,
+)
+
+job = scheduler.add_job(
+    TwitterClient().collect_n_save_tweets,
+    "interval",
+    minutes=30,
+    id="tweet_job",
     replace_existing=True,
 )
 
