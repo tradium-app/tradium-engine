@@ -7,7 +7,7 @@ from environs import Env
 from utilities.mongo_connection import get_db_connection
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.mongodb import MongoDBJobStore
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from database.seeding import Seeding
 from predictors.predictor import Predictor
@@ -16,11 +16,12 @@ from tweets_collector.tweets_collector import TweetsCollector
 
 env = Env()
 env.read_env()
+DATABASE_URL = env("DATABASE_URL")
 
 Seeding().initialize()
 
 jobstores = {
-    "default": MongoDBJobStore(database=env("MONGO_DB"), client=get_db_connection()),
+    "default": SQLAlchemyJobStore(url=DATABASE_URL, tablename="apscheduler_jobs"),
 }
 
 executors = {"default": ThreadPoolExecutor(20), "processpool": ProcessPoolExecutor(5)}

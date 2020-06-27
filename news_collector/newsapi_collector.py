@@ -2,7 +2,7 @@
 import sys
 
 sys.path.insert(0, "../")
-from newsapi import NewsApiClient
+from newsapi.newsapi_client import NewsApiClient
 from environs import Env
 from datetime import datetime, timedelta
 import bisect
