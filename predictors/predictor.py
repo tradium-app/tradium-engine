@@ -1,10 +1,10 @@
+# %%
 import sys
 
 sys.path.insert(0, "../")
 from environs import Env
 from datetime import date
 import json
-from utilities.mongo_connection import get_db_connection
 
 # from predictors.lstm import lstm_predict
 
@@ -40,17 +40,23 @@ class Predictor:
     def save_model_in_db(
         self, symbol, title, model_accuracy, model_prediction,
     ):
-        conn = get_db_connection()
+        # conn = get_db_connection()
         db = Env()("MONGO_DB")
-        stocksdb = conn[db]
-        modelCollection = stocksdb["models"]
+        # stocksdb = conn[db]
+        # modelCollection = stocksdb["models"]
 
-        dbModel = {
-            "symbol": symbol,
-            "title": title,
-            "model_accuracy": model_accuracy,
-            "model_prediction": model_prediction,
-            "date_created": date.today().strftime("%Y-%m-%d"),
-        }
+        # dbModel = {
+        #     "symbol": symbol,
+        #     "title": title,
+        #     "model_accuracy": model_accuracy,
+        #     "model_prediction": model_prediction,
+        #     "date_created": date.today().strftime("%Y-%m-%d"),
+        # }
 
-        modelCollection.find_one_and_replace({"symbol": symbol}, dbModel, upsert=True)
+        # modelCollection.find_one_and_replace({"symbol": symbol}, dbModel, upsert=True)
+
+
+if __name__ == "__main__":
+    predictor = Predictor()
+    predictor.predict_and_save()
+

@@ -2,11 +2,11 @@
 import sys
 
 sys.path.insert(0, "../")
+import psycopg2
 from newsapi.newsapi_client import NewsApiClient
 from environs import Env
 from datetime import datetime, timedelta
 import bisect
-from utilities.mongo_connection import get_db_connection
 
 env = Env()
 env.read_env()
@@ -42,23 +42,17 @@ class NewsCollector:
         return rounded
 
     def save_news_metrics(self, symbol, timestamp, news_metrics):
-        conn = get_db_connection()
-        db = Env()("MONGO_DB")
+        DATABASE_URL = env("DATABASE_URL")
+        connection = psycopg2.connect(DATABASE_URL)
+        cursor = connection.cursor()
 
-        stocksdb = conn[db]
-        modelCollection = stocksdb["news"]
-
-        news_metrics_record = {
-            "symbol": symbol,
-            "timestamp": timestamp,
-            "news_metrics": news_metrics,
-        }
-
-        modelCollection.find_one_and_replace(
-            {"symbol": symbol, "timestamp": timestamp}, news_metrics_record, upsert=True
-        )
+        postgres_insert_query = """INSERT INTO Stock_Data (Stock, DateTime, News_Count)
+        VALUES (%s,%s,%s)"""
+        record_to_insert = ("DAL", timestamp, news_metrics["news_count"])
+        cursor.execute(postgres_insert_query, record_to_insert)
+        connection.commit()
 
 
 if __name__ == "__main__":
     collector = NewsCollector()
-    news = collector.collect_n_save_news()
+    collector.collect_n_save_news()

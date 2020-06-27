@@ -17,9 +17,10 @@ class Seeding:
             cursor = connection.cursor()
 
             create_table_query = """CREATE TABLE IF NOT EXISTS Stock_Data
-                (ID           INT PRIMARY KEY     NOT NULL,
+                (ID           SERIAL PRIMARY KEY NOT NULL,
                 Stock         TEXT    NOT NULL,
                 DateTime      timestamptz NOT NULL,
+                News_Count               INT,
                 Tweets_Count             INT,
                 Positive_Tweets_Count    INT,
                 Negative_Tweets_Count    INT); """
