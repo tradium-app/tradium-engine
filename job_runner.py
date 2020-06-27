@@ -4,7 +4,6 @@ sys.path.insert(0, "../")
 import gc
 import time
 from environs import Env
-from utilities.mongo_connection import get_db_connection
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore

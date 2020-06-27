@@ -20,9 +20,9 @@ class Seeding:
                 (ID           INT PRIMARY KEY     NOT NULL,
                 Stock         TEXT    NOT NULL,
                 DateTime      timestamptz NOT NULL,
-                Tweet_Count             INT,
-                Positive_Tweet_Count    INT,
-                Negative_Tweet_Count    INT); """
+                Tweets_Count             INT,
+                Positive_Tweets_Count    INT,
+                Negative_Tweets_Count    INT); """
             cursor.execute(create_table_query)
             connection.commit()
 

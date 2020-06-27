@@ -3,9 +3,9 @@ import os
 import sys
 
 sys.path.insert(0, "../")
+import psycopg2
 from environs import Env
 from datetime import datetime, timedelta
-from utilities.mongo_connection import get_db_connection
 from tweets_collector.TwitterClient import TwitterClient
 
 
@@ -47,23 +47,21 @@ class TweetsCollector:
         return rounded
 
     def save_tweets_metrics(self, symbol, timestamp, tweets_metrics):
-        conn = get_db_connection()
-        db = Env()("MONGO_DB")
+        DATABASE_URL = env("DATABASE_URL")
+        connection = psycopg2.connect(DATABASE_URL)
+        cursor = connection.cursor()
 
-        stocksdb = conn[db]
-        modelCollection = stocksdb["tweets"]
-
-        tweets_metrics_record = {
-            "symbol": symbol,
-            "timestamp": timestamp,
-            "tweets_metrics": tweets_metrics,
-        }
-
-        modelCollection.find_one_and_replace(
-            {"symbol": symbol, "timestamp": timestamp},
-            tweets_metrics_record,
-            upsert=True,
+        postgres_insert_query = """INSERT INTO Stock_Data (Stock, DateTime, Tweets_Count, Positive_Tweets_Count, Negative_Tweets_Count)
+        VALUES (%s,%s,%s,%s,%s)"""
+        record_to_insert = (
+            "DAL",
+            timestamp,
+            tweets_metrics.positive_tweets_count + tweets_metrics.negative_tweets_count,
+            tweets_metrics.positive_tweets_count,
+            tweets_metrics.negative_tweets_count,
         )
+        cursor.execute(postgres_insert_query, record_to_insert)
+        connection.commit()
 
 
 if __name__ == "__main__":
