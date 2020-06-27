@@ -56,9 +56,10 @@ class TweetsCollector:
         record_to_insert = (
             "DAL",
             timestamp,
-            tweets_metrics.positive_tweets_count + tweets_metrics.negative_tweets_count,
-            tweets_metrics.positive_tweets_count,
-            tweets_metrics.negative_tweets_count,
+            tweets_metrics["positive_tweets_count"]
+            + tweets_metrics["negative_tweets_count"],
+            tweets_metrics["positive_tweets_count"],
+            tweets_metrics["negative_tweets_count"],
         )
         cursor.execute(postgres_insert_query, record_to_insert)
         connection.commit()
