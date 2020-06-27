@@ -9,12 +9,15 @@ from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+from database.seeding import Seeding
 from predictors.predictor import Predictor
 from news_collector.newsapi_collector import NewsCollector
 from tweets_collector.tweets_collector import TweetsCollector
 
 env = Env()
 env.read_env()
+
+Seeding().initialize()
 
 jobstores = {
     "default": MongoDBJobStore(database=env("MONGO_DB"), client=get_db_connection()),
@@ -27,7 +30,7 @@ scheduler = BackgroundScheduler(
     jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc
 )
 
-job = scheduler.add_job(
+scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
     minutes=10,
@@ -35,7 +38,7 @@ job = scheduler.add_job(
     replace_existing=True,
 )
 
-job = scheduler.add_job(
+scheduler.add_job(
     NewsCollector().collect_n_save_news,
     "interval",
     minutes=30,
@@ -43,7 +46,7 @@ job = scheduler.add_job(
     replace_existing=True,
 )
 
-job = scheduler.add_job(
+scheduler.add_job(
     TweetsCollector().collect_n_save_tweets,
     "interval",
     minutes=30,
