@@ -34,21 +34,23 @@ class NewsCollector:
             page=1,
         )
 
-        self.save_news_metrics(symbol, end_time, {"news_count": len(news["articles"])})
+        self.save_news_metrics(
+            symbol, company, end_time, {"news_count": len(news["articles"])}
+        )
 
     def rounded_to_the_last_30th_minute_epoch(self):
         now = datetime.now()
         rounded = now - (now - datetime.min) % timedelta(minutes=30)
         return rounded
 
-    def save_news_metrics(self, symbol, timestamp, news_metrics):
+    def save_news_metrics(self, symbol, company, timestamp, news_metrics):
         DATABASE_URL = env("DATABASE_URL")
         connection = psycopg2.connect(DATABASE_URL)
         cursor = connection.cursor()
 
-        postgres_insert_query = """INSERT INTO Stock_Data (Stock, DateTime, News_Count)
-        VALUES (%s,%s,%s)"""
-        record_to_insert = ("DAL", timestamp, news_metrics["news_count"])
+        postgres_insert_query = """INSERT INTO Stock_Data (Stock, Company, DateTime, News_Count)
+        VALUES (%s,%s,%s,%s)"""
+        record_to_insert = ("DAL", company, timestamp, news_metrics["news_count"])
         cursor.execute(postgres_insert_query, record_to_insert)
         connection.commit()
 

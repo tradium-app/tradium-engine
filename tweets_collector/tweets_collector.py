@@ -17,9 +17,10 @@ class TweetsCollector:
     def collect_n_save_tweets(self):
         company = "Delta Air Lines"
         symbol = "DAL"
+        searchTerm = "$DAL"
 
         api = TwitterClient()
-        tweets = api.get_tweets(query=company, count=2000)
+        tweets = api.get_tweets(query=searchTerm, count=2000)
 
         positive_tweets = [
             tweet for tweet in tweets if tweet["sentiment"] == "positive"
@@ -34,6 +35,7 @@ class TweetsCollector:
 
         self.save_tweets_metrics(
             symbol,
+            company,
             end_time,
             {
                 "positive_tweets_count": len(positive_tweets),
@@ -46,21 +48,24 @@ class TweetsCollector:
         rounded = now - (now - datetime.min) % timedelta(minutes=30)
         return rounded
 
-    def save_tweets_metrics(self, symbol, timestamp, tweets_metrics):
+    def save_tweets_metrics(self, symbol, company, timestamp, tweets_metrics):
         DATABASE_URL = env("DATABASE_URL")
         connection = psycopg2.connect(DATABASE_URL)
         cursor = connection.cursor()
 
-        postgres_insert_query = """INSERT INTO Stock_Data (Stock, DateTime, Tweets_Count, Positive_Tweets_Count, Negative_Tweets_Count)
-        VALUES (%s,%s,%s,%s,%s)"""
+        postgres_insert_query = """INSERT INTO Stock_Data (Stock, Company, DateTime, Tweets_Count, Positive_Tweets_Count, Negative_Tweets_Count, news_count)
+        VALUES (%s,%s,%s,%s,%s,%s, %s)"""
         record_to_insert = (
-            "DAL",
+            symbol,
+            company,
             timestamp,
             tweets_metrics["positive_tweets_count"]
             + tweets_metrics["negative_tweets_count"],
             tweets_metrics["positive_tweets_count"],
             tweets_metrics["negative_tweets_count"],
+            0,
         )
+
         cursor.execute(postgres_insert_query, record_to_insert)
         connection.commit()
 
