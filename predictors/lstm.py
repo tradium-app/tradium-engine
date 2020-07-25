@@ -7,10 +7,9 @@ import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 import math
-import datetime
 
 # %% Import data
-stock_history = pd.read_csv("./data/dummy-data.csv", delim_whitespace=True)
+stock_history = pd.read_csv("../data/dummy-data.csv", delim_whitespace=True)
 
 scaler = MinMaxScaler()
 stock_history = scaler.fit_transform(stock_history)
@@ -22,10 +21,18 @@ training_data = stock_history.iloc[:TRAINING_LENGTH, :]
 
 x_train, y_train = [], []
 BATCH_SIZE = 30
+NO_OF_INPUT_COLS = 2
 
 for i in range(BATCH_SIZE, len(training_data) - 2):
-    x_train.append(training_data.iloc[i - BATCH_SIZE : i, 0:1].to_numpy().tolist())
-    y_train.append(training_data.iloc[i : i + 1, 1:2].iloc[0, :].to_numpy().tolist())
+    x_train.append(
+        training_data.iloc[i - BATCH_SIZE : i, 0:NO_OF_INPUT_COLS].to_numpy().tolist()
+    )
+    y_train.append(
+        training_data.iloc[i : i + 1, NO_OF_INPUT_COLS : NO_OF_INPUT_COLS + 1]
+        .iloc[0, :]
+        .to_numpy()
+        .tolist()
+    )
 
 x_train, y_train = np.array(x_train), np.array(y_train)
 
@@ -51,7 +58,7 @@ regressor.compile(
 )
 
 # %% Train the model
-stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=2)
+stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=3)
 
 regressor.fit(
     x_train, y_train, epochs=40, batch_size=BATCH_SIZE, callbacks=[stoppingCallback]
@@ -63,8 +70,15 @@ test_data = stock_history.iloc[TRAINING_LENGTH:, :]
 x_test, y_test = [], []
 
 for i in range(BATCH_SIZE, len(test_data)):
-    x_test.append(test_data.iloc[i - BATCH_SIZE : i, 0:1].to_numpy().tolist())
-    y_test.append(test_data.iloc[i : i + 1, 1:2].iloc[0, :].to_numpy().tolist())
+    x_test.append(
+        test_data.iloc[i - BATCH_SIZE : i, 0:NO_OF_INPUT_COLS].to_numpy().tolist()
+    )
+    y_test.append(
+        test_data.iloc[i : i + 1, NO_OF_INPUT_COLS : NO_OF_INPUT_COLS + 1]
+        .iloc[0, :]
+        .to_numpy()
+        .tolist()
+    )
 
 x_test = np.array(x_test)
 y_test = np.array(y_test)
@@ -75,10 +89,13 @@ print(test_score, test_acc)
 
 y_predict = regressor.predict(x_test)
 
-x_test = x_test / scaler.scale_[0] + scaler.data_min_[0]
-y_predict = y_predict / scaler.scale_[1] + scaler.data_min_[1]
+# x_test = x_test / scaler.scale_[0] + scaler.data_min_[0]
+y_predict = (
+    y_predict / scaler.scale_[NO_OF_INPUT_COLS] + scaler.data_min_[NO_OF_INPUT_COLS]
+)
+y_test = y_test / scaler.scale_[NO_OF_INPUT_COLS] + scaler.data_min_[NO_OF_INPUT_COLS]
 
 pd.DataFrame(y_predict).plot()
-
+pd.DataFrame(y_test).plot()
 
 # %%
