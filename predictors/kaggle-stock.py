@@ -11,7 +11,7 @@ from keras.layers import LSTM
 from keras.layers import Dropout
 
 # %%
-dataset_train = pd.read_csv("./data/trainset.csv")
+dataset_train = pd.read_csv("../data/trainset.csv")
 
 trainset = dataset_train.iloc[:, 1:2].values
 
@@ -56,7 +56,7 @@ TRAIN_BATCH_SIZE = 32
 regressor.fit(x_train, y_train, epochs=100, batch_size=TRAIN_BATCH_SIZE)
 
 # %%
-dataset_test = pd.read_csv("./data/testset.csv")
+dataset_test = pd.read_csv("../data/testset.csv")
 real_stock_price = dataset_test.iloc[:, 1:2].values
 
 dataset_total = pd.concat((dataset_train["Open"], dataset_test["Open"]), axis=0)

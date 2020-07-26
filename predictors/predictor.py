@@ -1,10 +1,11 @@
 # %%
 import sys
 
-sys.path.insert(0, "../")
+sys.path.insert(0, "..")
 from environs import Env
 from datetime import date
 import json
+from notification.notification_sender import Notification_Sender
 
 # from predictors.lstm import lstm_predict
 
@@ -19,14 +20,13 @@ class Predictor:
 
         # model_loss, lstm_forecast = lstm_predict(symbol)
 
-        title = "Stock Prediction for {} ".format(symbol)
-
-        self.save_model_in_db(
-            symbol=symbol,
-            title="some new prediction",
-            model_accuracy="0.0",
-            model_prediction="0.0",
-        )
+        # title = "Stock Prediction for {} ".format(symbol)
+        # self.save_model_in_db(
+        #     symbol=symbol,
+        #     title="some new prediction",
+        #     model_accuracy="0.0",
+        #     model_prediction="0.0",
+        # )
 
         # self.save_model_in_db(
         #     symbol,
@@ -36,6 +36,10 @@ class Predictor:
         #     # train_mean_error,
         #     # test_mean_error,
         # )
+        import lstm
+
+        sender = Notification_Sender()
+        sender.send()
 
     def save_model_in_db(
         self, symbol, title, model_accuracy, model_prediction,

@@ -7,6 +7,7 @@ import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 import math
+import matplotlib.pyplot as plt
 
 # %% Import data
 
@@ -110,3 +111,17 @@ y_test = y_test / scaler.scale_[NO_OF_INPUT_COLS] + scaler.data_min_[NO_OF_INPUT
 pd.DataFrame(y_test).plot()
 pd.DataFrame(y_predict).plot()
 
+# %%
+fig = plt.gcf()
+plt.plot(y_test, color="red", label="Real Price")
+plt.plot(y_predict, color="blue", label="Predicted Price")
+title = "TSLA Price Prediction: test_score: {test_score:.3f}, test_acc: {test_acc:.3f}".format(
+    test_score=test_score, test_acc=test_acc
+)
+
+plt.title(title)
+plt.xlabel("Time")
+plt.ylabel("Price")
+plt.legend()
+fig.savefig("../charts/tsla-prediction.png", dpi=fig.dpi)
+plt.show()
