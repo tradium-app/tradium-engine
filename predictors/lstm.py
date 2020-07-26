@@ -1,7 +1,7 @@
 # %% Import libraries
-import numpy as np
-import matplotlib.pyplot as plt
+
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from tensorflow.keras import Sequential
@@ -9,19 +9,30 @@ from tensorflow.keras.layers import Dense, LSTM, Dropout
 import math
 
 # %% Import data
-stock_history = pd.read_csv("../data/dummy-data.csv", delim_whitespace=True)
+
+cols_list = [
+    "startEpochTime",
+    "openPrice",
+    "highPrice",
+    "lowPrice",
+    "volume",
+    "closePrice",
+]
+
+stock_history = pd.read_csv("../data/TSLA.csv")
+stock_history = stock_history[cols_list]
 
 scaler = MinMaxScaler()
 stock_history = scaler.fit_transform(stock_history)
 stock_history = pd.DataFrame(stock_history)
 
 # %% Prepare training data
-TRAINING_LENGTH = math.ceil(0.7 * len(stock_history))
+TRAINING_LENGTH = math.ceil(0.85 * len(stock_history))
 training_data = stock_history.iloc[:TRAINING_LENGTH, :]
 
 x_train, y_train = [], []
 BATCH_SIZE = 30
-NO_OF_INPUT_COLS = 2
+NO_OF_INPUT_COLS = 5
 
 for i in range(BATCH_SIZE, len(training_data) - 2):
     x_train.append(
@@ -36,7 +47,7 @@ for i in range(BATCH_SIZE, len(training_data) - 2):
 
 x_train, y_train = np.array(x_train), np.array(y_train)
 
-# %% Build & Train Model
+# %% Build Model
 regressor = Sequential()
 regressor.add(
     LSTM(
@@ -58,10 +69,10 @@ regressor.compile(
 )
 
 # %% Train the model
-stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=3)
+stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=5)
 
 regressor.fit(
-    x_train, y_train, epochs=40, batch_size=BATCH_SIZE, callbacks=[stoppingCallback]
+    x_train, y_train, epochs=100, batch_size=BATCH_SIZE, callbacks=[stoppingCallback]
 )
 
 # %% Prepare Test Data & Run Prediction
@@ -84,6 +95,7 @@ x_test = np.array(x_test)
 y_test = np.array(y_test)
 
 #  %% Evaluate & Run Prediction
+
 test_score, test_acc = regressor.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
 print(test_score, test_acc)
 
@@ -95,7 +107,6 @@ y_predict = (
 )
 y_test = y_test / scaler.scale_[NO_OF_INPUT_COLS] + scaler.data_min_[NO_OF_INPUT_COLS]
 
-pd.DataFrame(y_predict).plot()
 pd.DataFrame(y_test).plot()
+pd.DataFrame(y_predict).plot()
 
-# %%
