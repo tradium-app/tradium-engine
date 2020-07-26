@@ -13,6 +13,7 @@ data/*
 !data/dummy-data.csv
 !data/trainset.csv
 !data/testset.csv
+!data/TSLA.csv
 
 # compiled files
 *.pyc

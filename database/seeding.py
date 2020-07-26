@@ -10,12 +10,11 @@ env.read_env()
 
 class Seeding:
     def initialize(self):
+        DATABASE_URL = env("DATABASE_URL")
+        connection = psycopg2.connect(DATABASE_URL)
+        cursor = connection.cursor()
+
         try:
-            DATABASE_URL = env("DATABASE_URL")
-            connection = psycopg2.connect(DATABASE_URL)
-
-            cursor = connection.cursor()
-
             create_table_query = """CREATE TABLE IF NOT EXISTS Stock_Data
                 (ID           SERIAL PRIMARY KEY NOT NULL,
                 Stock         TEXT    NOT NULL,

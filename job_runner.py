@@ -1,3 +1,5 @@
+# %%
+from datetime import datetime
 import sys
 
 sys.path.insert(0, "../")
@@ -33,9 +35,10 @@ scheduler = BackgroundScheduler(
 scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
-    minutes=10,
+    minutes=20,
     id="prediction_job",
     replace_existing=True,
+    next_run_time=datetime.now(),
 )
 
 scheduler.add_job(
