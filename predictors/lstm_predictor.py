@@ -26,6 +26,7 @@ stock_history = stock_history[cols_list]
 scaler = MinMaxScaler()
 stock_history = scaler.fit_transform(stock_history)
 stock_history = pd.DataFrame(stock_history)
+stock_history = stock_history.head(1000)
 
 # %% Prepare training data
 TRAINING_LENGTH = math.ceil(0.85 * len(stock_history))
@@ -108,8 +109,6 @@ y_predict = (
 )
 y_test = y_test / scaler.scale_[NO_OF_INPUT_COLS] + scaler.data_min_[NO_OF_INPUT_COLS]
 
-pd.DataFrame(y_test).plot()
-pd.DataFrame(y_predict).plot()
 
 # %%
 fig = plt.gcf()

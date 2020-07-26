@@ -14,14 +14,14 @@ from sendgrid.helpers.mail import (
 env = Env()
 env.read_env()
 SENDGRID_API_KEY = env("SENDGRID_API_KEY")
-NOTIFICATION_RECEIPNTS = env.list("NOTIFICATION_RECEIPNTS")
+NOTIFICATION_RECIPIENTS = env.list("NOTIFICATION_RECIPIENTS")
 
 
 class Notification_Sender:
     def send(self):
         message = Mail(
             from_email="suraj.shrestha@live.com",
-            to_emails=NOTIFICATION_RECEIPNTS,
+            to_emails=NOTIFICATION_RECIPIENTS,
             subject="TSLA Model Prediction from Tradium",
             html_content="<strong>predictions from Tradium</strong>",
         )

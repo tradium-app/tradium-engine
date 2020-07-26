@@ -7,6 +7,7 @@ from datetime import date
 import json
 from notification.notification_sender import Notification_Sender
 
+
 # from predictors.lstm import lstm_predict
 
 env = Env()
@@ -36,7 +37,11 @@ class Predictor:
         #     # train_mean_error,
         #     # test_mean_error,
         # )
-        import lstm
+
+        filename = "lstm_predictor.py"
+        with open(filename, "rb") as source_file:
+            code = compile(source_file.read(), filename, "exec")
+        exec(code)
 
         sender = Notification_Sender()
         sender.send()
