@@ -6,7 +6,7 @@ from environs import Env
 from datetime import date
 import json
 from notification.notification_sender import Notification_Sender
-
+from utilities.get_abs_path import get_abs_path
 
 # from predictors.lstm import lstm_predict
 
@@ -38,7 +38,8 @@ class Predictor:
         #     # test_mean_error,
         # )
 
-        filename = "lstm_predictor.py"
+        filename = get_abs_path(__file__, "./lstm_predictor.py")
+
         with open(filename, "rb") as source_file:
             code = compile(source_file.read(), filename, "exec")
         exec(code)
@@ -46,23 +47,23 @@ class Predictor:
         sender = Notification_Sender()
         sender.send()
 
-    def save_model_in_db(
-        self, symbol, title, model_accuracy, model_prediction,
-    ):
-        # conn = get_db_connection()
-        db = Env()("MONGO_DB")
-        # stocksdb = conn[db]
-        # modelCollection = stocksdb["models"]
+    # def save_model_in_db(
+    #     self, symbol, title, model_accuracy, model_prediction,
+    # ):
+    # conn = get_db_connection()
+    # db = Env()("MONGO_DB")
+    # stocksdb = conn[db]
+    # modelCollection = stocksdb["models"]
 
-        # dbModel = {
-        #     "symbol": symbol,
-        #     "title": title,
-        #     "model_accuracy": model_accuracy,
-        #     "model_prediction": model_prediction,
-        #     "date_created": date.today().strftime("%Y-%m-%d"),
-        # }
+    # dbModel = {
+    #     "symbol": symbol,
+    #     "title": title,
+    #     "model_accuracy": model_accuracy,
+    #     "model_prediction": model_prediction,
+    #     "date_created": date.today().strftime("%Y-%m-%d"),
+    # }
 
-        # modelCollection.find_one_and_replace({"symbol": symbol}, dbModel, upsert=True)
+    # modelCollection.find_one_and_replace({"symbol": symbol}, dbModel, upsert=True)
 
 
 if __name__ == "__main__":

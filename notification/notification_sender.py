@@ -10,6 +10,7 @@ from sendgrid.helpers.mail import (
     FileType,
     Disposition,
 )
+from utilities.get_abs_path import get_abs_path
 
 env = Env()
 env.read_env()
@@ -26,7 +27,7 @@ class Notification_Sender:
             html_content="<strong>predictions from Tradium</strong>",
         )
 
-        with open("../charts/tsla-prediction.png", "rb") as f:
+        with open(get_abs_path(__file__, "../charts/tsla-prediction.png"), "rb") as f:
             data = f.read()
             f.close()
         encoded_file = base64.b64encode(data).decode()
@@ -42,7 +43,8 @@ class Notification_Sender:
         try:
             sg = SendGridAPIClient(SENDGRID_API_KEY)
             response = sg.send(message)
-            print(response.status_code, response.body, response.headers)
+            print(f"Email sent status code: {response.status_code}")
+            print(f"Email sent response body: {response.body}")
         except Exception as e:
             print(f"Printing exception: ", e)
 

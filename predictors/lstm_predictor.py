@@ -1,5 +1,7 @@
 # %% Import libraries
+import sys
 
+sys.path.insert(0, "../")
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
@@ -8,6 +10,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 import math
 import matplotlib.pyplot as plt
+from utilities.get_abs_path import get_abs_path
 
 # %% Import data
 
@@ -20,13 +23,13 @@ cols_list = [
     "closePrice",
 ]
 
-stock_history = pd.read_csv("../data/TSLA.csv")
+stock_history = pd.read_csv(get_abs_path(__file__, "../data/TSLA.csv"))
 stock_history = stock_history[cols_list]
 
 scaler = MinMaxScaler()
 stock_history = scaler.fit_transform(stock_history)
 stock_history = pd.DataFrame(stock_history)
-stock_history = stock_history.head(1000)
+# stock_history = stock_history.head(1000)
 
 # %% Prepare training data
 TRAINING_LENGTH = math.ceil(0.85 * len(stock_history))
@@ -122,5 +125,5 @@ plt.title(title)
 plt.xlabel("Time")
 plt.ylabel("Price")
 plt.legend()
-fig.savefig("../charts/tsla-prediction.png", dpi=fig.dpi)
+fig.savefig(get_abs_path(__file__, "../charts/tsla-prediction.png"), dpi=fig.dpi)
 plt.show()
