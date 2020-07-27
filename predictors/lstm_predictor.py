@@ -64,9 +64,23 @@ regressor.add(
 )
 regressor.add(Dropout(0.2))
 regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.3))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
+regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(Dropout(0.2))
 regressor.add(LSTM(units=10, activation="relu"))
-regressor.add(Dropout(0.3))
+regressor.add(Dropout(0.2))
 regressor.add(Dense(units=1))
 
 regressor.compile(
@@ -114,6 +128,7 @@ y_test = y_test / scaler.scale_[NO_OF_INPUT_COLS] + scaler.data_min_[NO_OF_INPUT
 
 
 # %%
+plt.close()
 fig = plt.gcf()
 plt.plot(y_test, color="red", label="Real Price")
 plt.plot(y_predict, color="blue", label="Predicted Price")

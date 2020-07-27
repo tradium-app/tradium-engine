@@ -35,7 +35,7 @@ scheduler = BackgroundScheduler(
 scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
-    minutes=20,
+    minutes=120,
     id="prediction_job",
     replace_existing=True,
     next_run_time=datetime.now(),
