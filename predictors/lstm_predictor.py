@@ -32,7 +32,7 @@ stock_history = pd.DataFrame(stock_history)
 # stock_history = stock_history.head(1000)
 
 # %% Prepare training data
-TRAINING_LENGTH = math.ceil(0.85 * len(stock_history))
+TRAINING_LENGTH = math.ceil(0.90 * len(stock_history))
 training_data = stock_history.iloc[:TRAINING_LENGTH, :]
 
 x_train, y_train = [], []
@@ -63,23 +63,11 @@ regressor.add(
     )
 )
 regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(LSTM(units=100, activation="relu", return_sequences=True))
 regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
+regressor.add(LSTM(units=100, activation="relu", return_sequences=True))
 regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu", return_sequences=True))
-regressor.add(Dropout(0.2))
-regressor.add(LSTM(units=10, activation="relu"))
+regressor.add(LSTM(units=100, activation="relu"))
 regressor.add(Dropout(0.2))
 regressor.add(Dense(units=1))
 
