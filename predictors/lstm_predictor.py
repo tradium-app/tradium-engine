@@ -83,7 +83,12 @@ regressor.compile(
 stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=5)
 
 regressor.fit(
-    x_train, y_train, epochs=100, batch_size=BATCH_SIZE, callbacks=[stoppingCallback]
+    x_train,
+    y_train,
+    epochs=100,
+    batch_size=BATCH_SIZE,
+    callbacks=[stoppingCallback],
+    shuffle=False,
 )
 
 # %% Prepare Test Data & Run Prediction
