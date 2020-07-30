@@ -1,14 +1,23 @@
 # %% Import libraries
+import os
+
+os.environ["PYTHONHASHSEED"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_CUDNN_USE_AUTOTUNE"] = "0"
+
 import sys
 
 sys.path.insert(0, "../")
 import pandas as pd
 import numpy as np
+import random as rn
+import tensorflow as tf
 
-np.random.seed(2313)
+rn.seed(0)
+np.random.seed(0)
+tf.random.set_seed(0)
 
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout
 import math
