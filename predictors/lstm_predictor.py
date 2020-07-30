@@ -12,6 +12,8 @@ import math
 import matplotlib.pyplot as plt
 from utilities.get_abs_path import get_abs_path
 
+np.random.seed(2313)
+
 # %% Import data
 
 cols_list = [
