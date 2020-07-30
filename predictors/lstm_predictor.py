@@ -4,6 +4,9 @@ import sys
 sys.path.insert(0, "../")
 import pandas as pd
 import numpy as np
+
+np.random.seed(2313)
+
 from sklearn.preprocessing import MinMaxScaler
 import tensorflow as tf
 from tensorflow.keras import Sequential
@@ -12,7 +15,6 @@ import math
 import matplotlib.pyplot as plt
 from utilities.get_abs_path import get_abs_path
 
-np.random.seed(2313)
 
 # %% Import data
 
