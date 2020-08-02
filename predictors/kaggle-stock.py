@@ -3,7 +3,6 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense
@@ -53,7 +52,7 @@ regressor.compile(optimizer="adam", loss="mean_squared_error")
 
 # %% Train the Model
 TRAIN_BATCH_SIZE = 32
-regressor.fit(x_train, y_train, epochs=100, batch_size=TRAIN_BATCH_SIZE)
+regressor.fit(x_train, y_train, epochs=10, batch_size=TRAIN_BATCH_SIZE)
 
 # %%
 dataset_test = pd.read_csv("../data/testset.csv")
@@ -66,12 +65,19 @@ inputs = sc.transform(inputs)
 
 # %% Prepare Test
 x_test = []
+y_test = []
+
 for i in range(BATCH_SIZE, len(inputs)):
     x_test.append(inputs[i - BATCH_SIZE : i, 0:1])
+    y_test.append(inputs[i, 0])
 
 x_test = np.array(x_test)
+y_test = np.array(y_test)
 
 # %%
+results = regressor.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
+print(results)
+
 predicted_price = regressor.predict(x_test)
 predicted_price = sc.inverse_transform(predicted_price)
 
