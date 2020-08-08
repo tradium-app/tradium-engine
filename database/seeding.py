@@ -16,13 +16,21 @@ class Seeding:
 
         try:
             create_table_query = """CREATE TABLE IF NOT EXISTS Stock_Data
-                (ID           SERIAL PRIMARY KEY NOT NULL,
-                Stock         TEXT    NOT NULL,
-                DateTime      timestamptz NOT NULL,
-                News_Count               INT,
-                Tweets_Count             INT,
-                Positive_Tweets_Count    INT,
-                Negative_Tweets_Count    INT); """
+                (id                      SERIAL PRIMARY KEY NOT NULL,
+                stock                    TEXT    NOT NULL,
+                datetime                 timestamptz NOT NULL,
+                start_epoch_time         INT,
+                open_price               NUMERIC,
+                high_price               NUMERIC,
+                low_price                NUMERIC,
+                close_price              NUMERIC,
+                volume                   INT,
+                news_count               INT,
+                tweets_count             INT,
+                positive_tweets_count    INT,
+                negative_tweets_count    INT,
+                predicted_close_price    NUMERIC,
+                error                    NUMERIC); """
             cursor.execute(create_table_query)
             connection.commit()
 
