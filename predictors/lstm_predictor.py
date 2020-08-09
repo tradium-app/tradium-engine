@@ -17,7 +17,8 @@ DATABASE_URL = env("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 df = pd.read_sql(
-    "select close_price from stock_data order by datetime desc limit 100000", con=engine
+    "select close_price from (select datetime, close_price from stock_data order by datetime desc limit 100000) as temp order by datetime asc",
+    con=engine,
 )
 
 df["Close"] = df["close_price"]
