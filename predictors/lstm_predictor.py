@@ -69,7 +69,7 @@ model.add(Dense(units=1))
 model.compile(optimizer="adam", loss="mae")
 
 # %% Train the model
-model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=3)
+model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=30)
 
 # %% Run Predictions
 x_test = train_data[-BATCH_SIZE:]
