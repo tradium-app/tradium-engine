@@ -15,7 +15,7 @@ class Seeding:
         cursor = connection.cursor()
 
         try:
-            create_table_query = """CREATE TABLE IF NOT EXISTS Stock_Data
+            create_table_query = """CREATE TABLE IF NOT EXISTS stock_data
                 (id                      SERIAL PRIMARY KEY NOT NULL,
                 stock                    TEXT    NOT NULL,
                 company                  TEXT,
@@ -31,7 +31,8 @@ class Seeding:
                 positive_tweets_count    INT,
                 negative_tweets_count    INT,
                 predicted_close_price    NUMERIC,
-                error                    NUMERIC); """
+                error                    NUMERIC,
+                UNIQUE(stock, datetime)); """
             cursor.execute(create_table_query)
             connection.commit()
 
