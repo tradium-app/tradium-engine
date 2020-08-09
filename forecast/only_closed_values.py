@@ -1,11 +1,3 @@
-"""
-Original file is located at
-    https://colab.research.google.com/drive/1GiGU6gShrBbACwNkcKg5aiAj-yxycqkS
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 #%%  Import the libraries
 import math
 import numpy as np
@@ -22,18 +14,12 @@ print(df.head())
 print(df.shape)
 
 #%% Visualize the closing price history
-# plt.figure(figsize=(16, 8))
-# plt.title("Close Price History")
 df["Close"] = df["closePrice"]
-# plt.plot(df["Close"])
-# plt.xlabel("Date", fontsize=18)
-# plt.ylabel("Close Price USD ($)", fontsize=18)
 
 # Create a new dataframe with only the 'Close' column
 data = df.filter(["Close"])
-data = data.tail(50000)
+data = data.tail(10000)
 
-#%% Converting the dataframe to a numpy array
 dataset = data.values
 
 #%% Get /Compute the number of rows to train the model on
@@ -49,9 +35,11 @@ train_data = scaled_data[0:training_data_len, :]
 #%% Split the data into x_train and y_train data sets
 x_train = []
 y_train = []
-for i in range(60, len(train_data)):
-    x_train.append(train_data[i - 60 : i, 0])
-    y_train.append(train_data[i, 0])
+BATCH_SIZE = 60
+
+for i in range(BATCH_SIZE, len(train_data) - 6):
+    x_train.append(train_data[i - BATCH_SIZE : i, 0])
+    y_train.append(train_data[i + 6, 0])
 
 #%% Convert x_train and y_train to numpy arrays
 x_train, y_train = np.array(x_train), np.array(y_train)
@@ -70,16 +58,16 @@ model.add(Dense(units=1))
 model.compile(optimizer="adam", loss="mae")
 
 #%% Train the model
-history = model.fit(x_train, y_train, batch_size=60, epochs=30)
+history = model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=30)
 
 # Test data set
-test_data = scaled_data[training_data_len - 60 :, :]
+test_data = scaled_data[training_data_len - BATCH_SIZE :, :]
 
 # Create the x_test and y_test data sets
 x_test = []
 y_test = dataset[training_data_len:, :]
-for i in range(60, len(test_data)):
-    x_test.append(test_data[i - 60 : i, :])
+for i in range(BATCH_SIZE, len(test_data)):
+    x_test.append(test_data[i - BATCH_SIZE : i, :])
 
 #%% Convert x_test to a numpy array
 x_test = np.array(x_test)
@@ -97,25 +85,11 @@ valid = data[training_data_len:]
 valid["Predictions"] = predictions
 
 #%% Visualize the data
-# plt.figure(figsize=(16, 8))
-# plt.title("Model")
-# plt.xlabel("Date", fontsize=18)
-# plt.ylabel("Close Price USD ($)", fontsize=18)
-# # plt.plot(train['Close'])
-# plt.plot(valid[["Close", "Predictions"]])
-# # plt.plot(predictions)
-# plt.legend(["Train", "Val", "Predictions"], loc="lower right")
-# plt.show()
-
-# #%% Show the valid and predicted prices
-# print(valid)
-
-# model.save("model.h5")
 plt.close()
 fig = plt.gcf()
 
-plt.plot(y_test[-500:], color="red", label="Real Price")
-plt.plot(predictions[-500:], color="blue", label="Predicted Price")
+plt.plot(y_test[-100:], color="red", label="Real Price")
+plt.plot(predictions[-100:], color="blue", label="Predicted Price")
 title = "TSLA Price Prediction:"
 plt.title(title)
 plt.xlabel("Time")

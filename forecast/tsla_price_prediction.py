@@ -4,14 +4,15 @@ import numpy as np
 import pandas as pd
 import random as rn
 from sklearn.preprocessing import MinMaxScaler
-import tensorflow as tf
+
+# import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 import matplotlib.pyplot as plt
 
 rn.seed(0)
 np.random.seed(0)
-tf.random.set_seed(0)
+# tf.random.set_seed(0)
 
 plt.style.use("fivethirtyeight")
 
@@ -19,7 +20,7 @@ plt.style.use("fivethirtyeight")
 
 df = pd.read_csv("../data/TSLA.csv")
 df = df.filter(["closePrice"])
-# df = df.tail(5000)
+df = df.tail(1000)
 
 dataset = df.values
 
@@ -28,19 +29,19 @@ training_data_len = math.ceil(len(dataset) * 0.95)
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
 
-train_data = scaled_data[0:training_data_len]
+train_data = scaled_data[0:training_data_len, :]
 
 #%% Prepare x_train and y_train
 BATCH_SIZE = 60
 x_train = []
 y_train = []
 
-
 for i in range(BATCH_SIZE, len(train_data)):
-    x_train.append(train_data[i - BATCH_SIZE : i])
+    x_train.append(train_data[i - BATCH_SIZE : i, 0])
     y_train.append(train_data[i, 0])
 
 x_train, y_train = np.array(x_train), np.array(y_train)
+x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
 #%% Build the LSTM network model
 model = Sequential()
@@ -52,14 +53,14 @@ model.add(Dense(units=1))
 model.compile(optimizer="adam", loss="mae")
 
 #%% Train the model
-stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=5)
+# stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=10)
 
 history = model.fit(
     x_train,
     y_train,
-    batch_size=64,
+    batch_size=BATCH_SIZE,
     epochs=30,
-    callbacks=[stoppingCallback],
+    # callbacks=[stoppingCallback],
     shuffle=False,
 )
 
@@ -67,19 +68,17 @@ history = model.fit(
 test_data = scaled_data[training_data_len - BATCH_SIZE :, :]
 
 x_test = []
-# y_test = []
+y_test = dataset[training_data_len:, :]
 
 for i in range(BATCH_SIZE, len(test_data)):
-    x_test.append(test_data[i - BATCH_SIZE : i])
+    x_test.append(test_data[i - BATCH_SIZE : i, :])
     # y_test.append(test_data[i, 0])
 
 x_test = np.array(x_test)
 # x_test, y_test = np.array(x_test), np.array(y_test)
 
-y_test = dataset[training_data_len:, :]
 
 #%% Evaluate Model
-
 model_evaluation_result = model.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
 print(model_evaluation_result)
 
@@ -95,8 +94,8 @@ print(rmse)
 plt.close()
 fig = plt.gcf()
 
-plt.plot(y_test, color="red", label="Real Price")
-plt.plot(y_predict, color="blue", label="Predicted Price")
+plt.plot(y_test[-1000:], color="red", label="Real Price")
+plt.plot(y_predict[-1000:], color="blue", label="Predicted Price")
 title = "TSLA Price Prediction: test_score: {result:.3f}".format(
     result=model_evaluation_result
 )
