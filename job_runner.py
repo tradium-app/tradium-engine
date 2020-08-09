@@ -14,6 +14,7 @@ from database.seeding import Seeding
 from predictors.predictor import Predictor
 from news_collector.newsapi_collector import NewsCollector
 from tweets_collector.tweets_collector import TweetsCollector
+from stocks_refresher.stocks_refresher import StocksRefresher
 
 env = Env()
 env.read_env()
@@ -54,6 +55,14 @@ scheduler.add_job(
     "interval",
     minutes=30,
     id="tweet_job",
+    replace_existing=True,
+)
+
+scheduler.add_job(
+    StocksRefresher().refresh,
+    "interval",
+    minutes=10,
+    id="stocks_refresher_job",
     replace_existing=True,
 )
 

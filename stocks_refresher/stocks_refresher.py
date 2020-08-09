@@ -21,7 +21,7 @@ class StocksRefresher:
     def pull_latest(self):
         api = tradeapi.REST()
         bars = api.get_barset(
-            ["TSLA"], "5Min", limit=10, until=datetime.utcnow().isoformat()
+            ["TSLA"], "5Min", limit=4, until=datetime.utcnow().isoformat()
         )
         return bars["TSLA"].df
 
