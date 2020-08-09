@@ -65,7 +65,7 @@ class StocksRefresher:
         placeholder = ", ".join([f"%({col})s" for col in dataframe.columns])
         updates = ", ".join([f"{col} = EXCLUDED.{col}" for col in dataframe.columns])
 
-        query = f"""INSERT INTO stock_data_2 ({columns})
+        query = f"""INSERT INTO stock_data ({columns})
                     VALUES ({placeholder})
                     ON CONFLICT ({constraint})
                     DO UPDATE SET {updates};"""

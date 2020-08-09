@@ -18,6 +18,7 @@ class Seeding:
             create_table_query = """CREATE TABLE IF NOT EXISTS Stock_Data
                 (id                      SERIAL PRIMARY KEY NOT NULL,
                 stock                    TEXT    NOT NULL,
+                company                  TEXT,
                 datetime                 timestamptz NOT NULL,
                 start_epoch_time         INT,
                 open_price               NUMERIC,

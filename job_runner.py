@@ -12,8 +12,6 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from database.seeding import Seeding
 from predictors.predictor import Predictor
-from news_collector.newsapi_collector import NewsCollector
-from tweets_collector.tweets_collector import TweetsCollector
 from stocks_refresher.stocks_refresher import StocksRefresher
 
 env = Env()
@@ -34,36 +32,20 @@ scheduler = BackgroundScheduler(
 )
 
 scheduler.add_job(
+    StocksRefresher().refresh,
+    "interval",
+    minutes=10,
+    id="stocks_refresher_job",
+    replace_existing=True,
+)
+
+scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
     minutes=120,
     id="prediction_job",
     replace_existing=True,
     next_run_time=datetime.now(),
-)
-
-scheduler.add_job(
-    NewsCollector().collect_n_save_news,
-    "interval",
-    minutes=30,
-    id="news_job",
-    replace_existing=True,
-)
-
-scheduler.add_job(
-    TweetsCollector().collect_n_save_tweets,
-    "interval",
-    minutes=30,
-    id="tweet_job",
-    replace_existing=True,
-)
-
-scheduler.add_job(
-    StocksRefresher().refresh,
-    "interval",
-    minutes=10,
-    id="stocks_refresher_job",
-    replace_existing=True,
 )
 
 scheduler.start()
