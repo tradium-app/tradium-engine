@@ -6,11 +6,11 @@ import pandas as pd
 from datetime import datetime
 
 
-def upsert_rows(dataframe, connection):
+def upsert_rows(table_name, dataframe, connection):
     cursor = connection.cursor()
     insert_values = dataframe.to_dict(orient="records")
     for row in insert_values:
-        query = create_upsert_query(dataframe)
+        query = create_upsert_query(table_name, dataframe)
         cursor.execute(query, row)
         connection.commit()
     row_count = len(insert_values)
@@ -20,13 +20,13 @@ def upsert_rows(dataframe, connection):
     connection.close()
 
 
-def create_upsert_query(dataframe):
+def create_upsert_query(table_name, dataframe):
     columns = ", ".join([f"{col}" for col in dataframe.columns])
     constraint = ", ".join([f"{col}" for col in ["stock", "datetime"]])
     placeholder = ", ".join([f"%({col})s" for col in dataframe.columns])
     updates = ", ".join([f"{col} = EXCLUDED.{col}" for col in dataframe.columns])
 
-    query = f"""INSERT INTO stock_data_2 ({columns})
+    query = f"""INSERT INTO {table_name} ({columns})
                 VALUES ({placeholder})
                 ON CONFLICT ({constraint})
                 DO UPDATE SET {updates};"""
@@ -40,8 +40,6 @@ if __name__ == "__main__":
     env.read_env()
     DATABASE_URL = env("DATABASE_URL")
     connection = psycopg2.connect(DATABASE_URL)
-    print(connection)
-
     df = pd.DataFrame({"stock": ["MDB"], "datetime": datetime.utcnow()})
-    upsert_rows(df, connection)
+    upsert_rows("stock_data_2", df, connection)
 

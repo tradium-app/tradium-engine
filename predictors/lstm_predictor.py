@@ -1,14 +1,23 @@
 #%%  Import the libraries
-import math
+import sys
+
+sys.path.insert(0, "../")
 import numpy as np
 import pandas as pd
+import random as rn
 from environs import Env
 from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
+from utilities.upsert_rows import upsert_rows
+import psycopg2
 
+rn.seed(0)
+np.random.seed(0)
+tf.random.set_seed(0)
 plt.style.use("fivethirtyeight")
 
 env = Env()
@@ -17,7 +26,7 @@ DATABASE_URL = env("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 df = pd.read_sql(
-    "select close_price from (select datetime, close_price from stock_data order by datetime desc limit 10000) as temp order by datetime asc",
+    "select datetime, close_price from (select datetime, close_price from stock_data where close_price is not null order by datetime desc limit 1000) as temp order by datetime asc",
     con=engine,
 )
 
@@ -60,7 +69,7 @@ model.add(Dense(units=1))
 model.compile(optimizer="adam", loss="mae")
 
 # %% Train the model
-model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=30)
+model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=3)
 
 # %% Run Predictions
 x_test = train_data[-BATCH_SIZE:]
@@ -70,4 +79,23 @@ predictions = model.predict(x_test)
 predictions = scaler.inverse_transform(predictions)  # Undo scaling
 
 # %% Save Predictions
-print(predictions)
+predicted_date = df.tail(1)["datetime"].values[0] + np.timedelta64(
+    NEXT_PREDICTION_STEP * 5, "m"
+)
+
+print(f"Predicted price for {predicted_date}: {predictions[0][0]}")
+
+env = Env()
+env.read_env()
+DATABASE_URL = env("DATABASE_URL")
+connection = psycopg2.connect(DATABASE_URL)
+
+predict_df = pd.DataFrame(
+    {
+        "stock": ["TSLA"],
+        "datetime": [predicted_date],
+        "predicted_close_price": [predictions[0][0]],
+    }
+)
+
+upsert_rows("stock_data", predict_df, connection)
