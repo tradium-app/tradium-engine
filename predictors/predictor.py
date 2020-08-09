@@ -3,7 +3,6 @@ import sys
 
 sys.path.insert(0, "..")
 from environs import Env
-from notification.notification_sender import Notification_Sender
 from utilities.get_abs_path import get_abs_path
 
 # from predictors.lstm import lstm_predict
@@ -21,9 +20,6 @@ class Predictor:
         with open(filename, "rb") as source_file:
             code = compile(source_file.read(), filename, "exec")
         exec(code)
-
-        sender = Notification_Sender()
-        sender.send()
 
 
 if __name__ == "__main__":
