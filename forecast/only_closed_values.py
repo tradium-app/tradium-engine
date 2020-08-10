@@ -1,28 +1,42 @@
 #%%  Import the libraries
-import math
+import sys
+
+sys.path.insert(0, "../")
 import numpy as np
 import pandas as pd
+import random as rn
+from environs import Env
 from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
+from sqlalchemy import create_engine
 import matplotlib.pyplot as plt
 
+rn.seed(0)
+np.random.seed(0)
+tf.random.set_seed(0)
 plt.style.use("fivethirtyeight")
 
-df = pd.read_csv("../data/TSLA.csv")
-print(df.head())
-print(df.shape)
+env = Env()
+env.read_env()
+DATABASE_URL = env("DATABASE_URL")
 
-#%% Visualize the closing price history
-df["Close"] = df["closePrice"]
+engine = create_engine(DATABASE_URL)
+df = pd.read_sql(
+    "select datetime, close_price from (select datetime, close_price from stock_data where close_price is not null order by datetime desc limit 100000) as temp order by datetime asc",
+    con=engine,
+)
 
-# Create a new dataframe with only the 'Close' column
+df["Close"] = df["close_price"]
 data = df.filter(["Close"])
-data = data.tail(10000)
 
 dataset = data.values
 
+
 #%% Get /Compute the number of rows to train the model on
+import math
+
 training_data_len = math.ceil(len(dataset) * 0.95)
 
 # Scale the all of the data to be values between 0 and 1
