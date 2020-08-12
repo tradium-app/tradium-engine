@@ -51,7 +51,7 @@ scheduler.add_job(
 scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
-    minutes=120,
+    minutes=10,
     id="prediction_job",
     replace_existing=True,
     next_run_time=datetime.now(),
