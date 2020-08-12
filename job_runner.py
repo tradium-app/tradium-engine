@@ -10,6 +10,7 @@ from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+from apscheduler.triggers.cron import CronTrigger
 from database.seeding import Seeding
 from predictors.predictor import Predictor
 from stocks_refresher.stocks_refresher import StocksRefresher
@@ -32,27 +33,30 @@ scheduler = BackgroundScheduler(
 )
 
 scheduler.add_job(
-    StocksRefresher().refresh,
-    "interval",
-    minutes=10,
     id="stocks_refresher_job",
+    func=StocksRefresher().refresh,
+    trigger=CronTrigger(
+        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="*/10", timezone="est"
+    ),
     replace_existing=True,
 )
 
 scheduler.add_job(
-    Predictor().build_model_and_save,
-    "interval",
-    minutes=120,
     id="build_model_job",
+    func=Predictor().build_model_and_save,
+    trigger=CronTrigger(
+        day_of_week="mon,tue,wed,thu,fri", hour="8-18/2", timezone="est"
+    ),
     replace_existing=True,
     next_run_time=datetime.now(),
 )
 
 scheduler.add_job(
-    Predictor().predict_and_save,
-    "interval",
-    minutes=10,
     id="prediction_job",
+    func=Predictor().predict_and_save,
+    trigger=CronTrigger(
+        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="*/10", timezone="est"
+    ),
     replace_existing=True,
     next_run_time=datetime.now(),
 )

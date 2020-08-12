@@ -24,7 +24,7 @@ DATABASE_URL = env("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 df = pd.read_sql(
-    "select datetime, close_price from (select datetime, close_price from stock_data where close_price is not null order by datetime desc limit 1000) as temp order by datetime asc",
+    "select datetime, close_price from (select datetime, close_price from stock_data where close_price is not null order by datetime desc limit 50000) as temp order by datetime asc",
     con=engine,
 )
 
@@ -49,7 +49,7 @@ train_data = scaled_data[0:training_data_len, :]
 x_train = []
 y_train = []
 BATCH_SIZE = 60
-NEXT_PREDICTION_STEP = 6
+NEXT_PREDICTION_STEP = 1
 
 for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
     x_train.append(train_data[i - BATCH_SIZE : i, :])
