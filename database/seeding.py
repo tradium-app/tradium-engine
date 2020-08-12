@@ -15,7 +15,7 @@ class Seeding:
         cursor = connection.cursor()
 
         try:
-            create_table_query = """CREATE TABLE IF NOT EXISTS stock_data
+            create_stock_data_table_query = """CREATE TABLE IF NOT EXISTS stock_data
                 (id                      SERIAL PRIMARY KEY NOT NULL,
                 stock                    TEXT    NOT NULL,
                 company                  TEXT,
@@ -33,7 +33,16 @@ class Seeding:
                 predicted_close_price    NUMERIC,
                 error                    NUMERIC,
                 UNIQUE(stock, datetime)); """
-            cursor.execute(create_table_query)
+            cursor.execute(create_stock_data_table_query)
+            connection.commit()
+
+            create_model_table_query = """CREATE TABLE IF NOT EXISTS stock_model
+                (id                      SERIAL PRIMARY KEY NOT NULL,
+                stock                    TEXT    NOT NULL,
+                datetime                 timestamptz,
+                model                    BYTEA,
+                UNIQUE(stock, datetime)); """
+            cursor.execute(create_model_table_query)
             connection.commit()
 
         except (Exception, psycopg2.DatabaseError) as error:

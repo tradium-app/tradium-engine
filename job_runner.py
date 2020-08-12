@@ -40,6 +40,15 @@ scheduler.add_job(
 )
 
 scheduler.add_job(
+    Predictor().build_model_and_save,
+    "interval",
+    minutes=120,
+    id="build_model_job",
+    replace_existing=True,
+    next_run_time=datetime.now(),
+)
+
+scheduler.add_job(
     Predictor().predict_and_save,
     "interval",
     minutes=120,

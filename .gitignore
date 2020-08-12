@@ -22,3 +22,5 @@ data/*
 .env
 .vscode/*
 
+# models
+*.h5
