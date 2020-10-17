@@ -50,7 +50,7 @@ train_data = scaled_data[0:training_data_len, :]
 x_train = []
 y_train = []
 BATCH_SIZE = 60
-NEXT_PREDICTION_STEP = 6
+NEXT_PREDICTION_STEP = 30
 
 for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
     x_train.append(train_data[i - BATCH_SIZE : i, :])
