@@ -20,7 +20,7 @@ plt.style.use("fivethirtyeight")
 
 df = pd.read_csv("../data/TSLA.csv")
 df = df.filter(["closePrice"])
-df = df.tail(1000)
+df = df.tail(10000)
 
 dataset = df.values
 
@@ -35,10 +35,11 @@ train_data = scaled_data[0:training_data_len, :]
 BATCH_SIZE = 60
 x_train = []
 y_train = []
+NEXT_PREDICTION_STEP = 30
 
-for i in range(BATCH_SIZE, len(train_data)):
+for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
     x_train.append(train_data[i - BATCH_SIZE : i, 0])
-    y_train.append(train_data[i, 0])
+    y_train.append(train_data[i + NEXT_PREDICTION_STEP, 0])
 
 x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
@@ -68,27 +69,27 @@ history = model.fit(
 test_data = scaled_data[training_data_len - BATCH_SIZE :, :]
 
 x_test = []
-y_test = dataset[training_data_len:, :]
+y_test = dataset[training_data_len + NEXT_PREDICTION_STEP :, :]
+y_test_previous = dataset[training_data_len:-NEXT_PREDICTION_STEP, :]
 
-for i in range(BATCH_SIZE, len(test_data)):
+for i in range(BATCH_SIZE, len(test_data) - NEXT_PREDICTION_STEP):
     x_test.append(test_data[i - BATCH_SIZE : i, :])
-    # y_test.append(test_data[i, 0])
 
 x_test = np.array(x_test)
-# x_test, y_test = np.array(x_test), np.array(y_test)
-
-
-#%% Evaluate Model
-model_evaluation_result = model.evaluate(x_test, y_test, batch_size=BATCH_SIZE)
-print(model_evaluation_result)
 
 # %% Run Prediction
 y_predict = model.predict(x_test)
 y_predict = scaler.inverse_transform(y_predict)
 
 #%% Calculate root mean square error
-rmse = np.sqrt(np.mean(((y_predict - y_test) ** 2)))
-print(rmse)
+error = sum(abs(y_predict - y_test))[0]
+
+profit_or_loss = 0
+for i in range(0, len(y_test)):
+    if y_predict[i] > y_test_previous[i]:
+        profit_or_loss += y_test[i] - y_test_previous[i]
+
+profit_or_loss = profit_or_loss[0]
 
 #%% Plot results
 plt.close()
@@ -96,8 +97,8 @@ fig = plt.gcf()
 
 plt.plot(y_test[-1000:], color="red", label="Real Price")
 plt.plot(y_predict[-1000:], color="blue", label="Predicted Price")
-title = "TSLA Price Prediction: test_score: {result:.3f}".format(
-    result=model_evaluation_result
+title = "TSLA Price Prediction: error: {error:.3f}, profit_or_loss: {profit_or_loss:.3f}".format(
+    error=error, profit_or_loss=profit_or_loss
 )
 plt.title(title)
 plt.xlabel("Time")
