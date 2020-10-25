@@ -55,7 +55,7 @@ scheduler.add_job(
     id="prediction_job",
     func=Predictor().predict_and_save,
     trigger=CronTrigger(
-        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="*/10", timezone="est"
+        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="*/30", timezone="est"
     ),
     replace_existing=True,
     next_run_time=datetime.now(),

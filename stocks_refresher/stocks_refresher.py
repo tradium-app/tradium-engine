@@ -6,7 +6,6 @@ from environs import Env
 import alpaca_trade_api as tradeapi
 from datetime import datetime
 import psycopg2
-import pandas as pd
 import logging
 
 env = Env()

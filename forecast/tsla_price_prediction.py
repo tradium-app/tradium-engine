@@ -20,12 +20,12 @@ plt.style.use("fivethirtyeight")
 
 df = pd.read_csv("../data/TSLA.csv")
 df = df.filter(["closePrice"])
-df = df.tail(10000)
+df = df.tail(100000)
 
 dataset = df.values
 
 #%% Prepare training data
-training_data_len = math.ceil(len(dataset) * 0.95)
+training_data_len = math.ceil(len(dataset) * 0.90)
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
 
@@ -89,7 +89,6 @@ for i in range(0, len(y_test)):
     if y_predict[i] > y_test_previous[i]:
         profit_or_loss += y_test[i] - y_test_previous[i]
 
-profit_or_loss = profit_or_loss[0]
 
 #%% Plot results
 plt.close()

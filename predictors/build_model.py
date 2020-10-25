@@ -47,9 +47,9 @@ scaled_data = scaler.fit_transform(dataset)
 train_data = scaled_data[0:training_data_len, :]
 
 #%% Split the data into x_train and y_train data sets
+BATCH_SIZE = 60
 x_train = []
 y_train = []
-BATCH_SIZE = 60
 NEXT_PREDICTION_STEP = 30
 
 for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
@@ -58,6 +58,7 @@ for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
 
 #%% Convert x_train and y_train to numpy arrays
 x_train, y_train = np.array(x_train), np.array(y_train)
+# x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
 #%% Build the LSTM network model
 model = Sequential()
@@ -69,8 +70,17 @@ model.add(Dense(units=1))
 # Compile the model
 model.compile(optimizer="adam", loss="mae")
 
-# %% Train the model
-model.fit(x_train, y_train, batch_size=BATCH_SIZE, epochs=30)
+#%% Train the model
+# stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=10)
+
+history = model.fit(
+    x_train,
+    y_train,
+    batch_size=BATCH_SIZE,
+    epochs=30,
+    # callbacks=[stoppingCallback],
+    shuffle=False,
+)
 
 # %% Save the model to file system
 model_file_name = "lstm_model.h5"
