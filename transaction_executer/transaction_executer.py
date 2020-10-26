@@ -29,7 +29,7 @@ class TransactionExecuter:
             print(order)
         else:
             print(
-                f"Predicted Price: {predicted_price}.\nTrade not executed at {datetime.now()}"
+                f"Latest Price: {current_price} \nPredicted Price: {predicted_price}.\nTrade not executed at {datetime.now()}"
             )
 
     def fetch_prediction(self):
