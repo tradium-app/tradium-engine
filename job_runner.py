@@ -38,7 +38,7 @@ scheduler.add_job(
     id="stocks_refresher_job",
     func=StocksRefresher().refresh,
     trigger=CronTrigger(
-        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="1-59/10", timezone="est"
+        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="*/10", timezone="est"
     ),
     replace_existing=True,
 )
@@ -46,21 +46,17 @@ scheduler.add_job(
 scheduler.add_job(
     id="build_model_job",
     func=Predictor().build_model_and_save,
-    trigger=CronTrigger(
-        day_of_week="mon,tue,wed,thu,fri", hour="8-18/2", timezone="est"
-    ),
+    trigger=CronTrigger(hour="*/2", minute="0", timezone="est"),
     replace_existing=True,
-    next_run_time=datetime.now(),
 )
 
 scheduler.add_job(
     id="prediction_job",
     func=Predictor().predict_and_save,
     trigger=CronTrigger(
-        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="*/30", timezone="est"
+        day_of_week="mon,tue,wed,thu,fri", hour="8-18", minute="2-59/30", timezone="est"
     ),
     replace_existing=True,
-    next_run_time=datetime.now(),
 )
 
 
