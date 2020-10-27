@@ -2,10 +2,10 @@
 import psycopg2
 from environs import Env
 
-# %%
-
 env = Env()
 env.read_env()
+
+# %%
 
 
 class Seeding:
@@ -43,6 +43,15 @@ class Seeding:
                 model                    BYTEA,
                 UNIQUE(stock, datetime)); """
             cursor.execute(create_model_table_query)
+            connection.commit()
+
+            create_positions_table_query = """CREATE TABLE IF NOT EXISTS stock_positions
+                (id                      SERIAL PRIMARY KEY NOT NULL,
+                stock                    TEXT    NOT NULL,
+                positions                INT,
+                last_updated             timestamptz,
+                UNIQUE(stock)); """
+            cursor.execute(create_positions_table_query)
             connection.commit()
 
         except (Exception, psycopg2.DatabaseError) as error:
