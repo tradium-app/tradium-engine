@@ -46,7 +46,7 @@ scheduler.add_job(
 scheduler.add_job(
     id="build_model_job",
     func=Predictor().build_model_and_save,
-    trigger=CronTrigger(hour="*/2", minute="0", timezone="est"),
+    trigger=CronTrigger(hour="8-18/4", minute="0", timezone="est"),
     replace_existing=True,
 )
 
