@@ -31,11 +31,13 @@ class TransactionExecuter:
                 "TSLA", 1, "buy", "market", "day", None, None, None, False
             )
             print(order)
+            self.update_positions(connection, "TSLA", 1)
         elif current_position > 0 and predicted_price < Decimal(0.99) * current_price:
             order = api.submit_order(
                 "TSLA", 1, "sell", "market", "day", None, None, None, False
             )
             print(order)
+            self.update_positions(connection, "TSLA", 0)
         else:
             print(
                 f"Latest Price: {current_price} \nPredicted Price: {predicted_price}.\nTrade not executed at {datetime.now()}"
