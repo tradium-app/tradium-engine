@@ -26,13 +26,13 @@ class TransactionExecuter:
             base_url=env("APCA_API_BASE_URL"),
         )
 
-        if current_position == 0 and predicted_price > Decimal(1.01) * current_price:
+        if current_position == 0 and predicted_price > Decimal(1.005) * current_price:
             order = api.submit_order(
                 "TSLA", 1, "buy", "market", "day", None, None, None, False
             )
             print(order)
             self.update_positions(connection, "TSLA", 1)
-        elif current_position > 0 and predicted_price < Decimal(0.99) * current_price:
+        elif current_position > 0 and predicted_price < Decimal(0.985) * current_price:
             order = api.submit_order(
                 "TSLA", 1, "sell", "market", "day", None, None, None, False
             )
@@ -59,12 +59,11 @@ class TransactionExecuter:
         cursor = connection.cursor()
 
         sql_select_query = f"""select stock,positions from stock_positions where LOWER(stock)=LOWER('{stock}');"""
-        print(sql_select_query)
 
         cursor.execute(sql_select_query)
+        current_positions = cursor.fetchone()
 
-        current_position = cursor.fetchone()[1]
-        return current_position
+        return 0 if current_positions is None else current_positions[0]
 
     def update_positions(self, connection, stock, new_positions):
         cursor = connection.cursor()
@@ -79,11 +78,9 @@ class TransactionExecuter:
         cursor.execute(upsert_query)
         connection.commit()
 
-        pass
-
 
 if __name__ == "__main__":
     executer = TransactionExecuter()
     connection = psycopg2.connect(DATABASE_URL)
-    positions = executer.fetch_positions(connection, "TSLA")
-    print(positions)
+    executer.execute_prediction()
+    # print(positions)
