@@ -5,14 +5,14 @@ import pandas as pd
 import random as rn
 from sklearn.preprocessing import MinMaxScaler
 
-# import tensorflow as tf
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM
 import matplotlib.pyplot as plt
 
 rn.seed(0)
 np.random.seed(0)
-# tf.random.set_seed(0)
+tf.random.set_seed(0)
 
 plt.style.use("fivethirtyeight")
 
@@ -20,12 +20,12 @@ plt.style.use("fivethirtyeight")
 
 df = pd.read_csv("../data/TSLA.csv")
 df = df.filter(["closePrice"])
-df = df.tail(100000)
+df = df.tail(10000)
 
 dataset = df.values
 
 #%% Prepare training data
-training_data_len = math.ceil(len(dataset) * 0.90)
+training_data_len = math.ceil(len(dataset) * 0.80)
 scaler = MinMaxScaler(feature_range=(0, 1))
 scaled_data = scaler.fit_transform(dataset)
 
@@ -54,14 +54,14 @@ model.add(Dense(units=1))
 model.compile(optimizer="adam", loss="mae")
 
 #%% Train the model
-# stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=10)
+stoppingCallback = tf.keras.callbacks.EarlyStopping(monitor="loss", patience=10)
 
 history = model.fit(
     x_train,
     y_train,
     batch_size=BATCH_SIZE,
     epochs=30,
-    # callbacks=[stoppingCallback],
+    callbacks=[stoppingCallback],
     shuffle=False,
 )
 
@@ -89,13 +89,15 @@ for i in range(0, len(y_test)):
     if y_predict[i] > y_test_previous[i]:
         profit_or_loss += y_test[i] - y_test_previous[i]
 
+profit_or_loss = profit_or_loss[0]
 
 #%% Plot results
 plt.close()
 fig = plt.gcf()
 
-plt.plot(y_test[-1000:], color="red", label="Real Price")
-plt.plot(y_predict[-1000:], color="blue", label="Predicted Price")
+plt.plot(y_test[-2000:], color="red", label="Real Price")
+# plt.scatter()
+plt.plot(y_predict[-2000:], color="blue", label="Predicted Price")
 title = "TSLA Price Prediction: error: {error:.3f}, profit_or_loss: {profit_or_loss:.3f}".format(
     error=error, profit_or_loss=profit_or_loss
 )
@@ -103,5 +105,5 @@ plt.title(title)
 plt.xlabel("Time")
 plt.ylabel("Price")
 plt.legend(loc="upper right")
-fig.savefig("../charts/tsla-prediction.png", dpi=fig.dpi)
-plt.show()
+# fig.savefig("../charts/tsla-prediction.png", dpi=fig.dpi)
+# plt.show()

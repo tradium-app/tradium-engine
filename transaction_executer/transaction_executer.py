@@ -40,7 +40,7 @@ class TransactionExecuter:
             self.update_positions(connection, "TSLA", 0)
         else:
             print(
-                f"Latest Price: {current_price} \nPredicted Price: {predicted_price}.\nTrade not executed at {datetime.now()}"
+                f"Latest Price: {current_price}; Predicted Price: {predicted_price}; Trade not executed at {datetime.now()}"
             )
 
     def fetch_prediction(self, connection):
