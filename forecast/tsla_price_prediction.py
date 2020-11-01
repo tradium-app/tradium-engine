@@ -35,7 +35,7 @@ train_data = scaled_data[0:training_data_len, :]
 BATCH_SIZE = 60
 x_train = []
 y_train = []
-NEXT_PREDICTION_STEP = 30
+NEXT_PREDICTION_STEP = 6
 
 for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
     x_train.append(train_data[i - BATCH_SIZE : i, 0])
@@ -106,4 +106,4 @@ plt.xlabel("Time")
 plt.ylabel("Price")
 plt.legend(loc="upper right")
 # fig.savefig("../charts/tsla-prediction.png", dpi=fig.dpi)
-# plt.show()
+plt.show()

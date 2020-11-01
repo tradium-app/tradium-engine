@@ -36,7 +36,6 @@ model = load_model(model_file_name)
 # %% Fetch latest data for prediction
 engine = create_engine(DATABASE_URL)
 BATCH_SIZE = 60
-NEXT_PREDICTION_STEP = 30
 
 df = pd.read_sql(
     "select datetime, close_price from (select datetime, close_price from stock_data where close_price is not null order by datetime desc limit %s ) as temp order by datetime asc"
@@ -58,8 +57,9 @@ x_predictions = scaler.inverse_transform(x_predictions)
 
 
 # %% Save Predictions
+NEXT_PREDICTION_MINS = 5 * 6
 predicted_date = df.tail(1)["datetime"].values[0] + np.timedelta64(
-    NEXT_PREDICTION_STEP, "m"
+    NEXT_PREDICTION_MINS, "m"
 )
 
 print(f"Predicted price for {predicted_date}: {x_predictions[0][0]}")
