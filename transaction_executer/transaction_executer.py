@@ -32,7 +32,7 @@ class TransactionExecuter:
             )
             print(order)
             self.update_positions(connection, "TSLA", 1)
-        elif current_position > 0 and predicted_price < Decimal(0.985) * current_price:
+        elif current_position > 0 and predicted_price < Decimal(0.995) * current_price:
             order = api.submit_order(
                 "TSLA", 1, "sell", "market", "day", None, None, None, False
             )

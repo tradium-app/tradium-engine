@@ -85,11 +85,17 @@ y_predict = scaler.inverse_transform(y_predict)
 error = sum(abs(y_predict - y_test))[0]
 
 profit_or_loss = 0
+correct_prediction = 0
 for i in range(0, len(y_test)):
     if y_predict[i] > y_test_previous[i]:
         profit_or_loss += y_test[i] - y_test_previous[i]
+    if (y_test[i] > y_test_previous[i] and y_predict[i] > y_test_previous[i]) or (
+        y_test[i] < y_test_previous[i] and y_predict[i] > y_test_previous[i]
+    ):
+        correct_prediction += 1
 
 profit_or_loss = profit_or_loss[0]
+prediction_accuracy = (correct_prediction * 100) / len(y_test)
 
 #%% Plot results
 plt.close()
@@ -98,8 +104,8 @@ fig = plt.gcf()
 plt.plot(y_test[-2000:], color="red", label="Real Price")
 # plt.scatter()
 plt.plot(y_predict[-2000:], color="blue", label="Predicted Price")
-title = "TSLA Price Prediction: error: {error:.3f}, profit_or_loss: {profit_or_loss:.3f}".format(
-    error=error, profit_or_loss=profit_or_loss
+title = "TSLA Price Prediction: error: {error:.2f}, profit_or_loss: {profit_or_loss:.2f}, prediction_accuracy: {prediction_accuracy: .2f}%".format(
+    error=error, profit_or_loss=profit_or_loss, prediction_accuracy=prediction_accuracy
 )
 plt.title(title)
 plt.xlabel("Time")
