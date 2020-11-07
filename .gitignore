@@ -24,3 +24,4 @@ data/*
 
 # models
 *.h5
+*/structured_data_regressor/*

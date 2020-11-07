@@ -23,6 +23,7 @@ df = df.filter(["closePrice"])
 df = df.tail(10000)
 
 dataset = df.values
+features_length = dataset.shape[1]
 
 #%% Prepare training data
 training_data_len = math.ceil(len(dataset) * 0.80)
@@ -32,21 +33,35 @@ scaled_data = scaler.fit_transform(dataset)
 train_data = scaled_data[0:training_data_len, :]
 
 #%% Prepare x_train and y_train
-BATCH_SIZE = 60
+BATCH_SIZE = 120
 x_train = []
 y_train = []
 NEXT_PREDICTION_STEP = 6
 
 for i in range(BATCH_SIZE, len(train_data) - NEXT_PREDICTION_STEP):
-    x_train.append(train_data[i - BATCH_SIZE : i, 0])
-    y_train.append(train_data[i + NEXT_PREDICTION_STEP, 0])
+    x_train.append(train_data[i - BATCH_SIZE : i, :])
+    y_train.append(train_data[i + NEXT_PREDICTION_STEP, -1:])
 
 x_train, y_train = np.array(x_train), np.array(y_train)
-x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
+# x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
 
 #%% Build the LSTM network model
 model = Sequential()
-model.add(LSTM(units=50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+model.add(
+    LSTM(
+        units=50, return_sequences=True, input_shape=(x_train.shape[1], features_length)
+    )
+)
+model.add(
+    LSTM(
+        units=50, return_sequences=True, input_shape=(x_train.shape[1], features_length)
+    )
+)
+model.add(
+    LSTM(
+        units=50, return_sequences=True, input_shape=(x_train.shape[1], features_length)
+    )
+)
 model.add(LSTM(units=50, return_sequences=False))
 model.add(Dense(units=25))
 model.add(Dense(units=1))
@@ -69,8 +84,8 @@ history = model.fit(
 test_data = scaled_data[training_data_len - BATCH_SIZE :, :]
 
 x_test = []
-y_test = dataset[training_data_len + NEXT_PREDICTION_STEP :, :]
-y_test_previous = dataset[training_data_len:-NEXT_PREDICTION_STEP, :]
+y_test = dataset[training_data_len + NEXT_PREDICTION_STEP :, features_length - 1]
+y_test_previous = dataset[training_data_len:-NEXT_PREDICTION_STEP, features_length - 1]
 
 for i in range(BATCH_SIZE, len(test_data) - NEXT_PREDICTION_STEP):
     x_test.append(test_data[i - BATCH_SIZE : i, :])
@@ -79,13 +94,18 @@ x_test = np.array(x_test)
 
 # %% Run Prediction
 y_predict = model.predict(x_test)
-y_predict = scaler.inverse_transform(y_predict)
+
+dummy = np.zeros(shape=(len(y_predict), features_length))
+dummy[:, features_length - 1] = np.reshape(y_predict, (y_predict.shape[0],))
+
+y_predict = scaler.inverse_transform(dummy)[:, [features_length - 1]]
 
 #%% Calculate root mean square error
 error = sum(abs(y_predict - y_test))[0]
 
-profit_or_loss = 0
+profit_or_loss = [0]
 correct_prediction = 0
+total_prediction = 0
 for i in range(0, len(y_test)):
     if y_predict[i] > y_test_previous[i]:
         profit_or_loss += y_test[i] - y_test_previous[i]
